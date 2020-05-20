@@ -3,7 +3,7 @@ package controllers
 import (
 	"io/ioutil"
 
-	"atomiccommits.io/sitebuilder/internal"
+	"atomiccommits.io/sitebuilder/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,14 +20,14 @@ func CreateSite(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	html := string(body)
 
-	c.String(200, internal.CreateSite(html))
+	c.String(200, services.CreateSite(html))
 }
 
 func UpdateSite(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	html := string(body)
 
-	c.String(200, internal.CreateSite(html))
+	c.String(200, services.CreateSite(html))
 }
 
 func GetSite(c *gin.Context) {
