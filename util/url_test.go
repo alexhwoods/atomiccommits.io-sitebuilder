@@ -1,6 +1,9 @@
 package util
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestInvertUrl(t *testing.T) {
 	urls := []string{
@@ -43,5 +46,15 @@ func TestUninvertUrl(t *testing.T) {
 		if InvertUrl(url) != uninvertedUrls[i] {
 			t.Errorf("Url " + url + " should invert to " + uninvertedUrls[i] + ", but it inverts to " + InvertUrl(url))
 		}
+	}
+}
+
+func TestReversabilityOfInvertingUrls(t *testing.T) {
+	urlWithHttps := "https://www.blog.sub.domain.really.overdoing.this.atomiccommits.io/foo/bar/baz/etc"
+
+	url := strings.ReplaceAll(urlWithHttps, "https://", "")
+
+	if InvertUrl(InvertUrl(urlWithHttps)) != url {
+		t.Errorf("Inverting a url is not reversable.")
 	}
 }
