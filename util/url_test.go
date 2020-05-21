@@ -23,3 +23,25 @@ func TestInvertUrl(t *testing.T) {
 		}
 	}
 }
+
+func TestUninvertUrl(t *testing.T) {
+	invertedUrls := []string{
+		"io.atomiccommits.www/joining-streams/",
+		"io.atomiccommits.www/inline-functions/",
+		"com.vim-adventures",
+		"com.google.mail/mail/u/0/#inbox",
+	}
+
+	uninvertedUrls := []string{
+		"www.atomiccommits.io/joining-streams/",
+		"www.atomiccommits.io/inline-functions/",
+		"vim-adventures.com",
+		"mail.google.com/mail/u/0/#inbox",
+	}
+
+	for i, url := range invertedUrls {
+		if InvertUrl(url) != uninvertedUrls[i] {
+			t.Errorf("Url " + url + " should invert to " + uninvertedUrls[i] + ", but it inverts to " + InvertUrl(url))
+		}
+	}
+}
