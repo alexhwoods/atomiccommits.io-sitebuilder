@@ -8,10 +8,6 @@ import (
 	"cloud.google.com/go/bigtable"
 )
 
-func wrapInArray(str string) []string {
-	return []string{str}
-}
-
 func min(a, b int) int {
 	if a <= b {
 		return a
