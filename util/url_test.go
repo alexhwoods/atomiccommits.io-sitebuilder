@@ -1,8 +1,8 @@
-package test
+package util
 
 import "testing"
 
-func Canary(t *testing.T) {
+func TestCanary(t *testing.T) {
 	x := 4
 
 	if x == 4 {
