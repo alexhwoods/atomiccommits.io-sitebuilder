@@ -14,6 +14,7 @@ func Routes(router *gin.Engine) {
 		sites.POST("", CreateSite)
 		sites.POST("/:id", UpdateSite)
 		sites.GET("/:id", GetSite)
+		sites.GET("", GetSites)
 	}
 }
 
@@ -47,4 +48,13 @@ func GetSite(c *gin.Context) {
 			"data": values,
 		})
 	}
+}
+
+func GetSites(c *gin.Context) {
+	prefix := c.Query("prefix")
+	values, _ := services.ReadSites(c.Request.Context(), prefix)
+
+	c.PureJSON(200, gin.H{
+		"data": values,
+	})
 }

@@ -20,6 +20,11 @@ func min(a, b int) int {
 	return b
 }
 
+type Page struct {
+	Url  string `json:"url" form:"url" binding:"required"`
+	Html string `json:"html" form:"html" binding:"required"`
+}
+
 func getIdByUUID(c context.Context, uuid string) (string, error) {
 	siteIds := db.Client.Open("site-ids")
 	row, _ := siteIds.ReadRow(c, uuid, bigtable.RowFilter(bigtable.ColumnFilter("a")))
@@ -67,6 +72,20 @@ func ReadSite(c context.Context, id string, versions int) ([]string, error) {
 		value := string(items[index].Value)
 		pages[index] = value
 	}
+
+	return pages, nil
+}
+
+func ReadSites(c context.Context, prefix string) ([]Page, error) {
+	sites := db.Client.Open("sites")
+
+	var pages []Page = make([]Page, 0)
+
+	rr := bigtable.PrefixRange(prefix)
+	sites.ReadRows(c, rr, func(r bigtable.Row) bool {
+		pages = append(pages, Page{Url: r.Key(), Html: string(r["content"][0].Value)})
+		return true
+	}, bigtable.RowFilter(bigtable.ColumnFilter("html")))
 
 	return pages, nil
 }
