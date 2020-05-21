@@ -12,3 +12,22 @@ It creates and updates versions of sites, which are just strings — presumed t
 git clone https://github.com/alexhwoods/atomiccommits.io-sitebuilder.git
 go run .
 ```
+
+## Format of Database
+
+This tutorial uses a BigTable database, with two tables:
+
+```
+sites
+  (key) <inverted-url>:
+    content:
+      html
+    editor:
+      user
+
+site-ids
+  (key) <uuid>:
+    a:
+      a:
+        <inverted-url>  // key of sites
+```
