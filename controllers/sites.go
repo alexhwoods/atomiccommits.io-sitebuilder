@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"atomiccommits.io/sitebuilder/services"
@@ -20,18 +21,20 @@ func CreateSite(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	html := string(body)
 
-	c.String(200, services.CreateSite(html))
+	c.Request.Context()
+	c.String(200, services.CreateSite(c.Request.Context(), html))
 }
 
 func UpdateSite(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	html := string(body)
 
-	c.String(200, services.CreateSite(html))
+	c.String(200, services.CreateSite(c.Request.Context(), html))
 }
 
 func GetSite(c *gin.Context) {
 	id := c.Param("id")
+	fmt.Println("with id " + id)
 
-	c.String(200, "getting site "+id)
+	c.String(200, services.ReadSite(c.Request.Context()))
 }
