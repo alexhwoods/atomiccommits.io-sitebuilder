@@ -24,6 +24,10 @@ type Page struct {
 	Id   string `json:"id"   form:"id"`
 }
 
+type UpdatePage struct {
+	Html string `json:"html" form:"html" binding:"required"`
+}
+
 func getIdByUUID(c context.Context, uuid string) (string, error) {
 	siteIds := db.Client.Open("site-ids")
 	row, _ := siteIds.ReadRow(c, uuid, bigtable.RowFilter(bigtable.ColumnFilter("a")))
@@ -51,6 +55,21 @@ func CreateSite(c context.Context, p *Page) (Page, error) {
 	siteIds.Apply(c, siteId, siteIdMutation)
 
 	return Page{Url: invertedUrl, Html: p.Html, Id: siteId}, nil
+}
+
+func UpdateSite(c context.Context, id string, p *UpdatePage) (Page, error) {
+	invertedUrl, err := getIdByUUID(c, id)
+	if err != nil {
+		return Page{}, errors.New("No site with id " + id)
+	}
+
+	sites := db.Client.Open("sites")
+	siteMutation := bigtable.NewMutation()
+	siteMutation.Set("meta", "id", bigtable.Now(), []byte(id))
+	siteMutation.Set("content", "html", bigtable.Now(), []byte(p.Html))
+	sites.Apply(c, invertedUrl, siteMutation)
+
+	return Page{Url: invertedUrl, Html: p.Html, Id: id}, nil
 }
 
 func ReadSite(c context.Context, id string, versions int) ([]Page, error) {

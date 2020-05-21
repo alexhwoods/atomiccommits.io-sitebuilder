@@ -11,6 +11,7 @@ func Routes(router *gin.Engine) {
 	sites := router.Group("/sites")
 	{
 		sites.POST("", CreateSite)
+		sites.PUT("/:id", UpdateSite)
 		sites.GET("/:id", GetSite)
 		sites.GET("", GetSites)
 	}
@@ -25,6 +26,25 @@ func CreateSite(c *gin.Context) {
 	}
 
 	responseBody, e := services.CreateSite(c.Request.Context(), body)
+	if e != nil {
+		c.PureJSON(400, gin.H{
+			"error": e.Error(),
+		})
+	} else {
+		c.PureJSON(200, responseBody)
+	}
+}
+
+func UpdateSite(c *gin.Context) {
+	id := c.Param("id")
+	body := new(services.UpdatePage)
+	err := c.Bind(body)
+
+	if err != nil {
+		c.String(400, "Request body not formed correctly.")
+	}
+
+	responseBody, e := services.UpdateSite(c.Request.Context(), id, body)
 	if e != nil {
 		c.PureJSON(400, gin.H{
 			"error": e.Error(),
