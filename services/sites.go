@@ -54,7 +54,7 @@ func CreateSite(c context.Context, p *Page) (Page, error) {
 	siteIdMutation.Set("a", "a", bigtable.Now(), []byte(invertedUrl))
 	siteIds.Apply(c, siteId, siteIdMutation)
 
-	return Page{Url: invertedUrl, Html: p.Html, Id: siteId}, nil
+	return Page{Url: util.InvertUrl(invertedUrl), Html: p.Html, Id: siteId}, nil
 }
 
 func UpdateSite(c context.Context, id string, p *UpdatePage) (Page, error) {
@@ -69,7 +69,7 @@ func UpdateSite(c context.Context, id string, p *UpdatePage) (Page, error) {
 	siteMutation.Set("content", "html", bigtable.Now(), []byte(p.Html))
 	sites.Apply(c, invertedUrl, siteMutation)
 
-	return Page{Url: invertedUrl, Html: p.Html, Id: id}, nil
+	return Page{Url: util.InvertUrl(invertedUrl), Html: p.Html, Id: id}, nil
 }
 
 func ReadSite(c context.Context, id string, versions int) ([]Page, error) {
@@ -98,7 +98,7 @@ func ReadSite(c context.Context, id string, versions int) ([]Page, error) {
 		pages = append(
 			pages,
 			Page{
-				Url:  siteId,
+				Url:  util.InvertUrl(siteId),
 				Html: string(items[0].Value),
 				Id:   id,
 			})
@@ -111,7 +111,7 @@ func ReadSite(c context.Context, id string, versions int) ([]Page, error) {
 		pages = append(
 			pages,
 			Page{
-				Url:  siteId,
+				Url:  util.InvertUrl(siteId),
 				Html: string(items[index].Value),
 				Id:   id,
 			})
@@ -130,7 +130,7 @@ func ReadSites(c context.Context, prefix string) ([]Page, error) {
 		pages = append(
 			pages,
 			Page{
-				Url:  r.Key(),
+				Url:  util.InvertUrl(r.Key()),
 				Html: string(r["content"][0].Value),
 				Id:   string(r["meta"][0].Value),
 			})
