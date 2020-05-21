@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"fmt"
 	"io/ioutil"
+	"strconv"
 
 	"atomiccommits.io/sitebuilder/services"
 	"github.com/gin-gonic/gin"
@@ -34,7 +34,17 @@ func UpdateSite(c *gin.Context) {
 
 func GetSite(c *gin.Context) {
 	id := c.Param("id")
-	fmt.Println("with id " + id)
 
-	c.String(200, services.ReadSite(c.Request.Context()))
+	versions, _ := strconv.Atoi(c.Query("versions"))
+	values, err := services.ReadSite(c.Request.Context(), id, versions)
+
+	if err != nil {
+		c.PureJSON(400, gin.H{
+			"error": err.Error(),
+		})
+	} else {
+		c.PureJSON(200, gin.H{
+			"data": values,
+		})
+	}
 }
