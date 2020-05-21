@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"io/ioutil"
 	"strconv"
 
 	"atomiccommits.io/sitebuilder/services"
@@ -12,25 +11,27 @@ func Routes(router *gin.Engine) {
 	sites := router.Group("/sites")
 	{
 		sites.POST("", CreateSite)
-		sites.POST("/:id", UpdateSite)
 		sites.GET("/:id", GetSite)
 		sites.GET("", GetSites)
 	}
 }
 
 func CreateSite(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	html := string(body)
+	body := new(services.Page)
+	err := c.Bind(body)
 
-	c.Request.Context()
-	c.String(200, services.CreateSite(c.Request.Context(), html))
-}
+	if err != nil {
+		c.String(400, "Request body not formed correctly.")
+	}
 
-func UpdateSite(c *gin.Context) {
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	html := string(body)
-
-	c.String(200, services.CreateSite(c.Request.Context(), html))
+	responseBody, e := services.CreateSite(c.Request.Context(), body)
+	if e != nil {
+		c.PureJSON(400, gin.H{
+			"error": e.Error(),
+		})
+	} else {
+		c.PureJSON(200, responseBody)
+	}
 }
 
 func GetSite(c *gin.Context) {

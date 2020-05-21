@@ -5,7 +5,9 @@ import (
 	"errors"
 
 	"atomiccommits.io/sitebuilder/db"
+	"atomiccommits.io/sitebuilder/util"
 	"cloud.google.com/go/bigtable"
+	"github.com/google/uuid"
 )
 
 func min(a, b int) int {
@@ -33,10 +35,22 @@ func getIdByUUID(c context.Context, uuid string) (string, error) {
 	return string(row["a"][0].Value), nil
 }
 
-func CreateSite(c context.Context, html string) string {
+func CreateSite(c context.Context, p *Page) (Page, error) {
+	siteId := uuid.New().String()
+	invertedUrl := util.InvertUrl(p.Url)
+
 	sites := db.Client.Open("sites")
-	row, _ := sites.ReadRow(c, "io.atomiccommits/welcome", bigtable.RowFilter(bigtable.ColumnFilter("html")))
-	return string(row["content"][0].Value)
+	siteMutation := bigtable.NewMutation()
+	siteMutation.Set("meta", "id", bigtable.Now(), []byte(siteId))
+	siteMutation.Set("content", "html", bigtable.Now(), []byte(p.Html))
+	sites.Apply(c, invertedUrl, siteMutation)
+
+	siteIds := db.Client.Open("site-ids")
+	siteIdMutation := bigtable.NewMutation()
+	siteIdMutation.Set("a", "a", bigtable.Now(), []byte(invertedUrl))
+	siteIds.Apply(c, siteId, siteIdMutation)
+
+	return Page{Url: invertedUrl, Html: p.Html, Id: siteId}, nil
 }
 
 func ReadSite(c context.Context, id string, versions int) ([]Page, error) {
