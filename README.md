@@ -31,3 +31,20 @@ site-ids
       a:
         <inverted-url>  // key of sites
 ```
+
+Here are the `cbt` commands that I used to create the tables, column families, and put some seed data in the db.
+
+```
+cbt createtable sites
+cbt createfamily sites content
+cbt createfamily sites editor
+
+cbt createtable site-ids
+cbt createfamily site-ids a
+
+
+cbt set sites io.atomiccommits/welcome editor:user="alex" content:html="<html>\n    <body>\n        <h1>Welcome</h1>\n    </body>\n</html>\n\n"
+cbt set sites io.atomiccommits/welcome editor:user="alex" content:html="<html>\n    <body>\n        <h1>Bienvenidos</h1>\n    </body>\n</html>\n\n"
+
+cbt set site-ids 671221eb-654a-434b-8363-b9bead78c68b a:a="io.atomiccommits/welcome"
+```
