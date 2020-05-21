@@ -6,6 +6,12 @@ It functions for a site editor.
 
 It creates and updates versions of sites, which are just strings — presumed to be valid HTML.
 
+## Setting up BigTable
+
+1. Create a BigTable Instance.
+2. Create tables, column families, and seed the database.
+3. Create a service account with the proper permissions and set the environment variable `GOOGLE_APPLICATION_CREDENTIALS`.
+
 ## To Run
 
 ```
