@@ -28,8 +28,8 @@ sites
   (key) <inverted-url>:
     content:
       html
-    editor:
-      user
+    meta:
+      id
 
 site-ids
   (key) <uuid>:
